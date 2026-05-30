@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  # Бэкенд
+  backend:
+    build: ./backend
+    container_name: weblib-back
+    ports:
+      - "8000:8000"
+    volumes:
+      # Для автоматической перезагрузки при разработке
+      - ./backend:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Фронтенд
+  frontend:
+    build: .
+    container_name: weblib-front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
+
+# Создаем общую сеть для взаимодействия контейнеров
+networks:
+  app-network:
+    driver: bridge
