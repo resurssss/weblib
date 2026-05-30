@@ -1,5 +1,20 @@
-# Vue 3 + Vite
+# Веб-приложение для управления личной библиотекой
+## В проекте используется: 
+- Vue 3
+- Vite 
+- JavaScript 
+- Docker
+- FastAPI
+- Nginx
+## Внешний API
+Open Library API (https://openlibrary.org/developers) - для поиска реальных книг по названию или автору
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Основные шаги:
+1. Создание проекта c помощью команды `npm create vite@latest weblib`
+2. Добавление Dockerfile, index.html, nginx.conf, vite.config.js и их настройка
+3. Сборка проекта с помощью команды `npm run build`
+4. Локальный запуск проекта с помощью команды `npm run dev`
+5. Запуск проекта через Docker: `docker-compose up --build`
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Скриншот приложения
+![](docs/imgs/1.png)
