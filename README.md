@@ -18,3 +18,6 @@ Open Library API (https://openlibrary.org/developers) - для поиска ре
 
 ## Скриншот приложения
 ![](docs/imgs/1.png)
+
+
+МЯЯЯЯУУУЙ
