@@ -1,76 +1,123 @@
 <template>
-  <section>
+  <section class="books-page">
     <h1>Каталог книг</h1>
 
-    <label>
-      Фильтр по доступности:
-      <select v-model="filterAvailable" @change="fetchBooks">
-        <option value="">Все</option>
-        <option value="true">Доступные</option>
-        <option value="false">Недоступные</option>
-      </select>
-    </label>
+    <div class="controls">
+      <label>
+        Фильтр по статусу:
+        <select v-model="statusFilter">
+          <option value="all">Все</option>
+          <option value="available">В наличии</option>
+        </select>
+      </label>
 
-    <label>
-      Сортировка:
-      <select v-model="sortBy" @change="fetchBooks">
-        <option value="date">По дате</option>
-        <option value="title">По названию</option>
-      </select>
-    </label>
+      <label>
+        Сортировка:
+        <select v-model="sortType">
+          <option value="date">По дате добавления</option>
+          <option value="title">По алфавиту</option>
+        </select>
+      </label>
+    </div>
+
+    <p>Всего книг после фильтрации: {{ filteredAndSortedBooks.length }}</p>
+
+    <p v-if="loading">Загрузка...</p>
+
+    <p v-else-if="filteredAndSortedBooks.length === 0">
+      Список книг пуст.
+    </p>
 
     <BookList
-      :books="books"
+      v-else
+      :books="filteredAndSortedBooks"
       @edit="editBook"
       @delete="deleteBook"
       @toggle-status="toggleStatus"
       @toggle-favorite="toggleFavorite"
       @toggle-reserve="toggleReserve"
     />
+
+    <RouterView />
   </section>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+
 import BookList from '../components/BookList.vue'
 import api from '../services/api'
 
+const router = useRouter()
+
 const books = ref([])
-const filterAvailable = ref('')
-const sortBy = ref('date')
+const loading = ref(false)
 
-function fetchBooks() {
-  let params = {}
-  if (filterAvailable.value !== '') params.available = filterAvailable.value
-  if (sortBy.value) params.sort = sortBy.value
+const statusFilter = ref('all')
+const sortType = ref('date')
 
-  api.get('/books', { params })
-    .then(res => { books.value = res.data })
-    .catch(err => console.error(err))
+const filteredAndSortedBooks = computed(() => {
+  let result = [...books.value]
+
+  if (statusFilter.value === 'available') {
+    result = result.filter(book => book.is_available)
+  }
+
+  if (sortType.value === 'title') {
+    result.sort((a, b) => a.title.localeCompare(b.title))
+  }
+
+  if (sortType.value === 'date') {
+    result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  }
+
+  return result
+})
+
+watch(statusFilter, () => {
+  console.log('Фильтр изменён:', statusFilter.value)
+})
+
+watch(sortType, () => {
+  console.log('Сортировка изменена:', sortType.value)
+})
+
+async function fetchBooks() {
+  loading.value = true
+
+  try {
+    const response = await api.get('/books')
+    books.value = response.data
+  } catch (error) {
+    console.error('Ошибка загрузки книг:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
 function editBook(id) {
-  console.log('edit', id)
+  router.push({ name: 'book-edit', params: { id } })
 }
 
-function deleteBook(id) {
-  api.delete(`/books/${id}`)
-    .then(() => fetchBooks())
+async function deleteBook(id) {
+  await api.delete(`/books/${id}`)
+  await fetchBooks()
 }
 
-function toggleStatus(id) {
-  api.patch(`/books/${id}/status`)
-    .then(() => fetchBooks())
+async function toggleStatus(id) {
+  await api.patch(`/books/${id}/status`)
+  await fetchBooks()
 }
 
-function toggleFavorite(id) {
-  api.patch(`/books/${id}/favorite`)
-    .then(() => fetchBooks())
+async function toggleFavorite(id) {
+  await api.patch(`/books/${id}/favorite`)
+  await fetchBooks()
 }
 
-function toggleReserve(id) {
-  api.patch(`/books/${id}/reserve`)
-    .then(() => fetchBooks())
+async function toggleReserve(id) {
+  await api.patch(`/books/${id}/reserve`)
+  await fetchBooks()
 }
 
 onMounted(fetchBooks)

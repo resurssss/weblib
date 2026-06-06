@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="book-list">
     <BookItem
       v-for="book in books"
       :key="book.id"
@@ -15,8 +15,19 @@
 
 <script setup>
 import BookItem from './BookItem.vue'
+
 defineProps({
-  books: Array
+  books: {
+    type: Array,
+    required: true
+  }
 })
-defineEmits(['edit', 'delete', 'toggle-status', 'toggle-favorite', 'toggle-reserve'])
+
+defineEmits([
+  'edit',
+  'delete',
+  'toggle-status',
+  'toggle-favorite',
+  'toggle-reserve'
+])
 </script>
