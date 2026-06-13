@@ -13,13 +13,6 @@
     </main>
 
     <footer class="layout-card-footer">
-      <slot name="footer" :created-at="createdAt">
-        <p>Дата не указана</p>
-      </slot>
     </footer>
   </section>
 </template>
-
-<script setup>
-const createdAt = new Date().toLocaleDateString('ru-RU')
-</script>
