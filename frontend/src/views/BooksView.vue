@@ -32,25 +32,22 @@
 
       <div v-else-if="filteredAndSortedBooks.length === 0" class="empty-state">
         <svg viewBox="0 0 24 24" fill="none">
-          <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2"/>
-          <path d="M8 4V8" stroke="currentColor" stroke-width="2"/>
-          <path d="M16 4V8" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2" />
+          <path d="M8 4V8" stroke="currentColor" stroke-width="2" />
+          <path d="M16 4V8" stroke="currentColor" stroke-width="2" />
         </svg>
         <p>Список книг пуст</p>
       </div>
 
-      <div v-else class="books-grid">
-        <BookItem
-          v-for="book in filteredAndSortedBooks"
-          :key="book.id"
-          :book="book"
-          @edit="editBook"
-          @delete="deleteBook"
-          @toggle-status="toggleStatus"
-          @toggle-favorite="toggleFavorite"
-          @toggle-reserve="toggleReserve"
-        />
-      </div>
+      <BookList
+        v-else
+        :books="filteredAndSortedBooks"
+        @edit="editBook"
+        @delete="deleteBook"
+        @toggle-status="toggleStatus"
+        @toggle-favorite="toggleFavorite"
+        @toggle-reserve="toggleReserve"
+      />
     </div>
 
     <RouterView />
@@ -61,7 +58,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
-import BookItem from '../components/BookItem.vue'
+import BookList from '../components/BookList.vue'
 import api from '../services/api'
 
 const router = useRouter()
@@ -142,9 +139,8 @@ onMounted(fetchBooks)
   font-size: 2rem;
   color: #2e3d81;
   text-align: left;
-  margin: 1rem 0 2rem 1rem; 
+  margin: 1rem 0 2rem 1rem;
   font-weight: 600;
-  /*text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
 
 .catalog-container {
@@ -200,7 +196,7 @@ onMounted(fetchBooks)
 
 .stats {
   text-align: left;
-  margin-bottom: 0rem;
+  margin-bottom: 0;
 }
 
 .stats p {
@@ -230,7 +226,9 @@ onMounted(fetchBooks)
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-state {
@@ -251,43 +249,24 @@ onMounted(fetchBooks)
   color: rgba(255, 255, 255, 0.8);
 }
 
-.books-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-@media (min-width: 1024px) {
-  .books-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-}
-
 @media (max-width: 768px) {
   .catalog-page {
     padding: 1rem;
   }
-  
+
   .catalog-title {
     font-size: 1.5rem;
     margin-bottom: 1rem;
   }
-  
+
   .controls {
     flex-direction: column;
     gap: 0.75rem;
   }
-  
+
   .filter-group {
     justify-content: space-between;
     width: 100%;
-  }
-  
-  .books-grid {
-    gap: 0.75rem;
   }
 }
 </style>

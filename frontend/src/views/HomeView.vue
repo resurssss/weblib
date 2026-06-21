@@ -2,15 +2,17 @@
   <section class="home">
     <div class="home-container">
       <LayoutCard>
+        <!-- Именованный слот -->
         <template #header>
           <div class="header-content">
             <h1>Электронная библиотека ElectoLibrary</h1>
           </div>
         </template>
 
+        <!-- Обычный слот -->
         <div class="welcome-section">
           <p class="welcome-text">
-            Добро пожаловать в ElectoLibrary — удобное приложение для работы с каталогом книг
+            Добро пожаловать в ElectoLibrary — удобное приложение для работы с каталогом книг.
           </p>
         </div>
 
@@ -19,10 +21,12 @@
             <div class="stat-number" id="booksCount">0</div>
             <div class="stat-label">книг(и) в каталоге</div>
           </div>
+
           <div class="stat-card">
             <div class="stat-number">∞</div>
             <div class="stat-label">возможностей</div>
           </div>
+
           <div class="stat-card">
             <div class="stat-number">24/7</div>
             <div class="stat-label">доступ к знаниям</div>
@@ -32,20 +36,49 @@
         <div class="buttons-section">
           <button class="catalog-button" @click="goToCatalog">
             <span>Перейти в электронный каталог</span>
+
             <svg class="button-icon" viewBox="0 0 24 24" fill="none">
-              <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 5L19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path
+                d="M5 12H19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M12 5L19 12L12 19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
           </button>
-          
+
           <button class="create-button" @click="goToCreateBook">
             <span>Добавить новую книгу</span>
+
             <svg class="button-icon" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path
+                d="M12 5V19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
+              <path
+                d="M5 12H19"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              />
             </svg>
           </button>
         </div>
+
+        <!-- Scoped slot -->
+        <template #footer="{ createdAt }">
+          <p class="card-footer-text">
+            Дата открытия страницы: {{ createdAt }}
+          </p>
+        </template>
       </LayoutCard>
     </div>
   </section>
@@ -71,7 +104,9 @@ onMounted(async () => {
   try {
     const response = await api.get('/books')
     const booksCount = response.data.length
+
     const booksCountElement = document.getElementById('booksCount')
+
     if (booksCountElement) {
       booksCountElement.textContent = booksCount
     }
@@ -173,16 +208,16 @@ h1 {
   box-shadow: 0 4px 15px rgba(46, 61, 129, 0.3);
 }
 
-.catalog-button:hover,
-.create-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(46, 61, 129, 0.4);
-}
-
 .create-button {
   background: #2e3d81;
   color: white;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.catalog-button:hover,
+.create-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(46, 61, 129, 0.4);
 }
 
 .button-icon {
@@ -191,8 +226,7 @@ h1 {
   transition: transform 0.3s ease;
 }
 
-.catalog-button:hover .button-icon,
-.create-button:hover .button-icon {
+.catalog-button:hover .button-icon {
   transform: translateX(5px);
 }
 
@@ -200,33 +234,40 @@ h1 {
   transform: rotate(90deg);
 }
 
+.card-footer-text {
+  text-align: center;
+  margin-top: 1rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
   .home {
     padding: 1rem;
   }
-  
+
   .home-container {
     max-width: 100%;
   }
-  
+
   h1 {
     font-size: 1.8rem;
   }
-  
+
   .stats-section {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .stat-card {
     width: 100%;
   }
-  
+
   .buttons-section {
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .catalog-button,
   .create-button {
     width: 100%;
