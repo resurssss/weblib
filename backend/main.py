@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from typing import Optional
 import os
 import shutil
+import json
 
 from models import Base, Book
 
@@ -80,6 +81,48 @@ def get_book(book_id: int, db: Session = Depends(get_db)):
 
     return book
 
+
+def seed_books_if_empty():
+    db = SessionLocal()
+
+    try:
+        if not os.path.exists("seed_books.json"):
+            return
+
+        with open("seed_books.json", "r", encoding="utf-8") as file:
+            books_data = json.load(file)
+
+        for item in books_data:
+            existing_book = db.query(Book).filter(
+                Book.title == item.get("title"),
+                Book.author == item.get("author")
+            ).first()
+
+            if existing_book:
+                continue
+
+            book = Book(
+                title=item.get("title"),
+                author=item.get("author"),
+                description=item.get("description"),
+                cover=item.get("cover"),
+                publisher=item.get("publisher"),
+                category=item.get("category"),
+                year=item.get("year"),
+                collection=item.get("collection"),
+                is_available=item.get("is_available", True),
+                is_favorite=item.get("is_favorite", False),
+                is_reserved=item.get("is_reserved", False)
+            )
+
+            db.add(book)
+
+        db.commit()
+
+    finally:
+        db.close()
+
+seed_books_if_empty()
 
 @app.post("/api/books")
 def create_book(

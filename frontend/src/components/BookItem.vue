@@ -2,10 +2,12 @@
   <article class="book-item">
     <div class="book-cover">
       <img
-        v-if="book.cover"
-        :src="`http://localhost:8000/${book.cover}`"
+        v-if="coverUrl"
+        :src="coverUrl"
         :alt="book.title"
+        @error="imageError = true"
       />
+
       <div v-else class="cover-placeholder">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2"/>
@@ -14,7 +16,7 @@
           <path d="M4 10H20" stroke="currentColor" stroke-width="2"/>
         </svg>
       </div>
-      
+
       <div class="badges">
         <span v-if="book.is_favorite" class="badge favorite">❤️</span>
         <span v-if="book.is_reserved" class="badge reserved">🔒</span>
@@ -24,12 +26,16 @@
     <div class="book-info">
       <div class="book-header">
         <h3 class="book-title">{{ book.title }}</h3>
-          <div class="status-badge" :class="{ available: book.is_available, unavailable: !book.is_available }">
-            <span v-if="book.is_available" class="status-dot"></span>
-            <span>{{ book.is_available ? 'В наличии' : 'Нет в наличии' }}</span>
-          </div>
+
+        <div
+          class="status-badge"
+          :class="{ available: book.is_available, unavailable: !book.is_available }"
+        >
+          <span v-if="book.is_available" class="status-dot"></span>
+          <span>{{ book.is_available ? 'В наличии' : 'Нет в наличии' }}</span>
+        </div>
       </div>
-      
+
       <div class="book-details">
         <div class="detail-row">
           <svg class="detail-icon" viewBox="0 0 24 24" fill="none">
@@ -38,7 +44,7 @@
           </svg>
           <span>{{ book.author }}</span>
         </div>
-        
+
         <div class="detail-row">
           <svg class="detail-icon" viewBox="0 0 24 24" fill="none">
             <path d="M4 6H20V18H4V6Z" stroke="currentColor" stroke-width="2"/>
@@ -47,7 +53,7 @@
           </svg>
           <span>{{ book.publisher }}</span>
         </div>
-        
+
         <div class="detail-row">
           <svg class="detail-icon" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
@@ -55,13 +61,17 @@
           </svg>
           <span>{{ book.year }}</span>
         </div>
-        
+
         <div class="detail-row">
           <svg class="detail-icon" viewBox="0 0 24 24" fill="none">
             <path d="M20 7H4C2.9 7 2 7.9 2 9V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V9C22 7.9 21.1 7 20 7Z" stroke="currentColor" stroke-width="2"/>
             <path d="M16 21V5C16 3.9 15.1 3 14 3H10C8.9 3 8 3.9 8 5V21" stroke="currentColor" stroke-width="2"/>
           </svg>
           <span>{{ book.category }}</span>
+        </div>
+
+        <div v-if="book.collection" class="detail-row">
+          <span>📚 {{ book.collection }}</span>
         </div>
       </div>
 
@@ -71,7 +81,7 @@
             <path d="M17 3L21 7L7 21H3V17L17 3Z" stroke="currentColor" stroke-width="2"/>
           </svg>
         </button>
-        
+
         <button class="action-btn delete" @click="$emit('delete', book.id)" title="Удалить">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M4 7H20" stroke="currentColor" stroke-width="2"/>
@@ -81,20 +91,20 @@
             <path d="M9 7L10 3H14L15 7" stroke="currentColor" stroke-width="2"/>
           </svg>
         </button>
-        
+
         <button class="action-btn status" @click="$emit('toggle-status', book.id)" title="Изменить статус">
           <svg viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
             <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2"/>
           </svg>
         </button>
-        
+
         <button class="action-btn favorite" :class="{ active: book.is_favorite }" @click="$emit('toggle-favorite', book.id)" title="Избранное">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M12 21.35L10.55 20.03C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.54L12 21.35Z" stroke="currentColor" :fill="book.is_favorite ? 'currentColor' : 'none'"/>
           </svg>
         </button>
-        
+
         <button class="action-btn reserve" :class="{ active: book.is_reserved }" @click="$emit('toggle-reserve', book.id)" title="Бронирование">
           <svg viewBox="0 0 24 24" fill="none">
             <rect x="3" y="7" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
@@ -109,7 +119,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed, ref, watch } from 'vue'
+
+const props = defineProps({
   book: {
     type: Object,
     required: true
@@ -123,6 +135,27 @@ defineEmits([
   'toggle-favorite',
   'toggle-reserve'
 ])
+
+const imageError = ref(false)
+
+watch(
+  () => props.book.cover,
+  () => {
+    imageError.value = false
+  }
+)
+
+const coverUrl = computed(() => {
+  if (!props.book.cover || imageError.value) {
+    return null
+  }
+
+  if (props.book.cover.startsWith('http')) {
+    return props.book.cover
+  }
+
+  return `http://localhost:8000/${props.book.cover}`
+})
 </script>
 
 <style scoped>
@@ -354,21 +387,21 @@ defineEmits([
     padding: 0.75rem;
     gap: 1rem;
   }
-  
+
   .book-cover {
     width: 100%;
     height: 200px;
   }
-  
+
   .book-header {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .book-details {
     gap: 0.5rem;
   }
-  
+
   .action-btn {
     width: 36px;
     height: 36px;

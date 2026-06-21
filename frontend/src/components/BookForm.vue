@@ -275,9 +275,11 @@ function submitForm() {
   text-align: left;
   margin-bottom: 0.75rem;
   font-weight: 500;
-  color: #1e293b;
   font-size: 0.95rem;
+  color: #1e293b;
 }
+
+/* ---------- Все поля ---------- */
 
 .form-group input[type="text"],
 .form-group input[type="number"],
@@ -285,21 +287,41 @@ function submitForm() {
 .form-group select {
   width: 100%;
   padding: 0.875rem 1rem;
+
   border: 1px solid #e2e8f0;
   border-radius: 12px;
+
   font-size: 1rem;
   font-family: inherit;
-  transition: all 0.2s ease;
-  background: #f8fafc;
+
+  background: #f8fafc !important;
+
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  caret-color: #000 !important;
+
+  transition: .2s;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
+
+  background: white !important;
+
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  background: white;
+
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+
+  box-shadow: 0 0 0 3px rgba(102,126,234,.15);
 }
 
 .form-group input:hover,
@@ -308,10 +330,18 @@ function submitForm() {
   border-color: #cbd5e1;
 }
 
+/* ---------- Файл ---------- */
+
 .form-group input[type="file"] {
-  padding: 0.75rem;
-  border: 1px dashed #e2e8f0;
+  width: 100%;
+  padding: .75rem;
+
   background: #f8fafc;
+  color: #000;
+
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+
   cursor: pointer;
 }
 
@@ -320,102 +350,98 @@ function submitForm() {
   background: #f1f5f9;
 }
 
-/* Radio группа */
+/* ---------- Radio ---------- */
+
 .radio-group {
   display: flex;
   gap: 1.5rem;
-  align-items: center;
   flex-wrap: wrap;
-  margin-top: 0.5rem;
+  margin-top: .5rem;
 }
 
 .radio-label {
-  display: inline-flex !important;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: normal !important;
-  margin-bottom: 0 !important;
+  gap: .5rem;
   cursor: pointer;
-  font-size: 0.95rem;
+
+  color: #1e293b;
+  font-weight: 400;
+}
+
+.radio-label span {
+  color: #1e293b;
 }
 
 .radio-label input[type="radio"] {
   width: auto;
-  margin: 0;
-  cursor: pointer;
 }
 
-.radio-label span {
-  color: #475569;
-}
+/* ---------- Ошибки ---------- */
 
-.radio-label:hover span {
-  color: #667eea;
-}
-
-/* Ошибки */
 .error {
   display: block;
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
+  margin-top: .5rem;
   color: #dc2626;
+  font-size: .85rem;
 }
 
-/* Кнопки */
+/* ---------- Кнопки ---------- */
+
 .form-actions {
   display: flex;
-  gap: 1rem;
+  justify-content: center;
   margin-top: 2rem;
 }
 
 .btn-submit {
-  flex: 1;
-  padding: 0.875rem;
+  width: 300px;
+  padding: .9rem;
+
   border: none;
-  max-width: 300px;
-  margin: 0 auto 2rem auto; /* 2rem отступ снизу */
   border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: inherit;
+
   background: #2e3d81;
   color: white;
-}
 
+  font-size: 1rem;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: .25s;
+}
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 5px 16px rgba(46,61,129,.3);
 }
 
-.btn-cancel:hover {
-  background: #e2e8f0;
-  transform: translateY(-2px);
-}
-
-.btn-submit:active,
-.btn-cancel:active {
+.btn-submit:active {
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
+/* ---------- Адаптив ---------- */
+
+@media (max-width:768px) {
+
   .book-form {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
-  
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
+
   .radio-group {
     gap: 1rem;
   }
-  
-  .form-actions {
-    flex-direction: column;
-    gap: 0.75rem;
+
+  .btn-submit {
+    width: 100%;
   }
+}
+
+/* ---------- Запрет браузеру менять цвета ---------- */
+
+input,
+textarea,
+select {
+  color-scheme: light;
 }
 </style>
